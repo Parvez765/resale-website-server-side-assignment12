@@ -1,5 +1,5 @@
-const expres = require("express")
-const app = expres()
+const express = require("express")
+const app = express()
 const port = process.env.PORT || 5000
 
 // Middle Ware Setup
