@@ -20,7 +20,25 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 async function run() {
     try {
-            
+        const categoryCollection = client.db("buysandsells").collection("categoryCollections")
+        const productCollection = client.db("buysandsells").collection("productcollections")
+        const userCollection = client.db("buysandsells").collection("users")
+
+        // Getting Category From Database
+
+        app.get("/categories", async (req, res) => {
+            const query = {}
+            const result = await categoryCollection.find(query).toArray()
+            res.send(result)
+        })
+
+
+        // Store Users in Database
+        app.post("/users", async (req, res) => {
+            const user = req.body
+            const result = await userCollection.insertOne(user)
+            res.send(result)
+        })
     }
     finally {
         
