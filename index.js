@@ -21,21 +21,24 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 
 // JWT VERIFICATION
-function verifyJWT(req, res, next) {
-    const authHeader = req.headers.authorization
-    if (!authHeader) {
-        return res.status(401).send({message: "Forbidden Access"})
-    }
-    const token = authHeader.split(" ")[1]
-    jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
-        if (err) {
-            return res.status(403).send({message: "UnAuthorized Access"})
-        }
-        req.decoded = decoded
-        next()
-    })
+// function verifyJWT(req, res, next) {
+//     const authHeader = req.headers.authorization
+//     console.log(authHeader)
+//     if (!authHeader) {
+//         return res.status(401).send({message: "UnAuthorized Access"})
+//     }
+//     const token = authHeader.split(" ")[1]
+//     console.log(token)
+//     jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+//         if (err) {
+//             console.log("This is" ,err)
+//             return res.status(403).send({message: "Forbidden Access1"})
+//         }
+//         req.decoded = decoded
+//         next()
+//     })
 
-}
+// }
 
 
 
@@ -64,6 +67,14 @@ async function run() {
         // })
 
 
+        // Getting All The Products From Database
+
+        app.get("/dashboard/addproducts", async(req, res)=> {
+            const query = {}
+            const result = await productCollection.find(query).toArray()
+            res.send(result)
+        })
+
         // Posting Product
         app.post("/dashboard/addproducts", async (req, res) => {
             const products = req.body
@@ -81,14 +92,18 @@ async function run() {
         })
 
         // Getting All Users From Database
-        app.get("/users",verifyJWT, async (req, res) => {
-            const decodedEmail = req.decoded.email
+        app.get("/users", async (req, res) => {
+            // const decodedEmail = req.decoded.email
             const email = req.query.email
-            if (email !== decodedEmail) {
-                return res.status(403).send({message: "Forbidden Access"})
-            }
-          
             const query = {}
+            // console.log(email, decodedEmail)
+            // console.log("inside", req.query)
+
+            // if (email !== decodedEmail) {
+            //     return res.status(403).send({message: "Forbidden Access2"})
+            // }
+          
+            
             const result = await userCollection.find(query).toArray()
             res.send(result)
         })
