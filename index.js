@@ -183,6 +183,18 @@ async function run() {
             }
             res.status(403).send({message: "Forbidden"})
         })
+
+      
+
+
+        // DeleteUser
+        app.delete("/users/:id", async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            console.log(query)
+            const result = await userCollection.deleteOne(query)
+            res.send(result)
+        })
     }
     finally {
         
