@@ -125,6 +125,15 @@ async function run() {
             res.send(result)
         })
 
+        // Getting Booking Products From Database
+        app.get("/bookings", async (req, res) => {
+            const email = req.query.email
+            const query = { email: email }
+            const result = await bookingCollection.find(query).toArray()
+            res.send(result)
+            
+        })
+
         // Inserting Booking to Database 
         app.post("/bookings", async (req, res) => {
             const bookedPhone = req.body
