@@ -32,7 +32,7 @@ function verifyJWT(req, res, next) {
     jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
         if (err) {
             console.log("This is" ,err)
-            return res.status(403).send({message: "Forbidden Access1"})
+            return res.status(403).send({message: "Forbidden Access"})
         }
         req.decoded = decoded
         next()
@@ -72,9 +72,16 @@ async function run() {
 
         // Getting All The Products From Database
 
-        app.get("/dashboard/addproducts", async(req, res)=> {
-            const query = {}
-            const result = await productCollection.find(query).toArray()
+        app.get("/dashboard/addproducts", verifyJWT, async (req, res) => {
+            
+            const query = { isSeller: true }
+            const seller = await userCollection.find(query).toArray()
+            if (!seller) {
+                return res.status(401).send({message: "UnAuthorized Access"})
+            }
+
+            const filter = {}
+            const result = await productCollection.find(filter).toArray()
             res.send(result)
         })
 
@@ -107,17 +114,19 @@ async function run() {
             res.send(result)
         })
 
+        // Admin List
+        app.get("/admin",  async (req, res) => {
+            const query = { isAdmin: true }
+            const result = await userCollection.find(query).toArray()
+            res.send(result)
+        })
+
         // Getting All Users From Database
         app.get("/users", async (req, res) => {
             // const decodedEmail = req.decoded.email
             const email = req.query.email
             const query = {}
-            // console.log(email, decodedEmail)
-            // console.log("inside", req.query)
-
-            // if (email !== decodedEmail) {
-            //     return res.status(403).send({message: "Forbidden Access2"})
-            // }
+            
           
             
             const result = await userCollection.find(query).toArray()
