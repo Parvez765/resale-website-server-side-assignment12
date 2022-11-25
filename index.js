@@ -79,7 +79,20 @@ async function run() {
         })
 
         // Posting Product
-        app.post("/dashboard/addproducts", async (req, res) => {
+        app.post("/dashboard/addproducts", verifyJWT, async (req, res) => {
+
+            // const decodedEmail = req.decoded.email
+            // console.log(decodedEmail)
+            const query = {isSeller : true}
+            const seller = await userCollection.find(query).toArray()
+            console.log(seller)
+            // console.log("This is decoded" ,decodedEmail)
+            // console.log("This is query" ,query)
+
+            if (!seller) {
+                return res.status(401).send({message: "UnAuthorized Access"})
+            }
+
             const products = req.body
             console.log(products)
             const result = await productCollection.insertOne(products)
