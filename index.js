@@ -184,7 +184,20 @@ async function run() {
             res.status(403).send({message: "Forbidden"})
         })
 
-      
+        // UpDate User
+        app.put("/users/:id", async (req, res) => {
+            const id = req.params.id
+            const filter = { _id: ObjectId(id) }
+            const options = {upsert: true}
+            const updatedDoc = {
+                $set: {
+                    isVerified: true
+                }
+            }
+            const result = await userCollection.updateOne(filter, updatedDoc, options)
+            res.send(result)
+        })
+
 
 
         // DeleteUser
