@@ -21,24 +21,24 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 
 // JWT VERIFICATION
-// function verifyJWT(req, res, next) {
-//     const authHeader = req.headers.authorization
-//     console.log(authHeader)
-//     if (!authHeader) {
-//         return res.status(401).send({message: "UnAuthorized Access"})
-//     }
-//     const token = authHeader.split(" ")[1]
-//     console.log(token)
-//     jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
-//         if (err) {
-//             console.log("This is" ,err)
-//             return res.status(403).send({message: "Forbidden Access1"})
-//         }
-//         req.decoded = decoded
-//         next()
-//     })
+function verifyJWT(req, res, next) {
+    const authHeader = req.headers.authorization
+    console.log(authHeader)
+    if (!authHeader) {
+        return res.status(401).send({message: "UnAuthorized Access"})
+    }
+    const token = authHeader.split(" ")[1]
+    console.log(token)
+    jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+        if (err) {
+            console.log("This is" ,err)
+            return res.status(403).send({message: "Forbidden Access1"})
+        }
+        req.decoded = decoded
+        next()
+    })
 
-// }
+}
 
 
 
@@ -126,8 +126,16 @@ async function run() {
         })
 
         // Getting Booking Products From Database
-        app.get("/bookings", async (req, res) => {
+        app.get("/bookings", verifyJWT, async (req, res) => {
+            
+            const decodedEmail = req.decoded.email
+
             const email = req.query.email
+
+            if (email !== decodedEmail) {
+                return res.status(403).send("Forbidden Access")
+            }
+
             const query = { email: email }
             const result = await bookingCollection.find(query).toArray()
             res.send(result)
