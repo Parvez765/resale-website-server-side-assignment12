@@ -47,6 +47,7 @@ async function run() {
         const categoryCollection = client.db("buysandsells").collection("categoryCollections")
         const productCollection = client.db("buysandsells").collection("productcollections")
         const userCollection = client.db("buysandsells").collection("users")
+        const bookingCollection = client.db("buysandsells").collection("bookings")
 
         // Getting Category From Database
 
@@ -56,15 +57,17 @@ async function run() {
             res.send(result)
         })
 
-        // Getting Products All Products
-        // app.get("/categories/:categoryId", async (req, res) => {
-        //     const categoryId = req.params.categoryId
-        //     console.log("This is", categoryId)
+        // Getting All Products 
+        app.get("/categories/:categoryId", async (req, res) => {
+            const categoryId = req.params.categoryId
+            console.log("This is", categoryId)
            
-        //    const query = {categoryId : categoryId}
-        //     const result = await productCollection.find(query).toArray()
-        //     res.send(result)
-        // })
+            const query = {options: categoryId }
+            console.log("Query" ,query)
+            const result = await productCollection.find(query).toArray()
+            console.log(result)
+            res.send(result)
+        })
 
 
         // Getting All The Products From Database
@@ -115,6 +118,19 @@ async function run() {
             res.send(result)
         })
 
+        app.get("/user", async (req, res) => {
+            const email = req.query.email
+            const query = {email: email}
+            const result = await userCollection.findOne(query)
+            res.send(result)
+        })
+
+        // Inserting Booking to Database 
+        app.post("/bookings", async (req, res) => {
+            const bookedPhone = req.body
+            const result = await bookingCollection.insertOne(bookedPhone)
+            res.send(result)
+            })
 
         // Creating JWT Token
 
