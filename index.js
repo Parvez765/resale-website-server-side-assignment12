@@ -223,16 +223,44 @@ async function run() {
         //     res.send(result)
         // })
         
-        app.put("/advertised/:id", async (req, res) => {
+        app.put("/advertised/:id", verifyJWT, async (req, res) => {
+
+            const query = {isSeller : true}
+            const seller = await userCollection.find(query).toArray()
+            
+
+            if (!seller) {
+                return res.status(401).send({message: "UnAuthorized Access"})
+            }
+
+
             const id = req.params.id
             const filter = { _id: ObjectId(id) }
             const options = {upsert: true}
             const updatedDoc = {
                 $set: {
-                    isAdvertized: true
+                    isAdvertized: true,
+                    isBooked: false
                 }
             }
             const result = await productCollection.updateOne(filter, updatedDoc, options)
+            res.send(result)
+        })
+
+        // Delete Functionality
+        app.delete("/products/:id", verifyJWT, async (req, res) => {
+
+            const query = {isSeller : true}
+            const seller = await userCollection.find(query).toArray()
+            
+
+            if (!seller) {
+                return res.status(401).send({message: "UnAuthorized Access"})
+            }
+
+            const id = req.params.id
+            const filter = { _id: ObjectId(id) }
+            const result = await productCollection.deleteOne(filter)
             res.send(result)
         })
 
