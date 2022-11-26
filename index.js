@@ -155,6 +155,7 @@ async function run() {
             const decodedEmail = req.decoded.email
 
             const email = req.query.email
+            // console.log("booking Email" ,email)
 
             if (email !== decodedEmail) {
                 return res.status(403).send("Forbidden Access")
@@ -220,6 +221,7 @@ async function run() {
         app.get("/wishlist", async (req, res) => {
             
             const email = req.query.email
+            console.log("This is", req.query.email)
             const query = { email: email }
             const result = await wishListCollection.find(query).toArray()
             res.send(result)
@@ -230,7 +232,17 @@ async function run() {
             const addedProducts = req.body
             const result = await wishListCollection.insertOne(addedProducts)
             res.send(result)
-            })
+        })
+        
+        // WishList Delete Api
+        app.delete("/wishlist/:id", async (req, res) => {
+            const id = req.params.id
+            // console.log("This is", id)
+            const query = { _id: ObjectId(id) }
+            // console.log("This is Quert", query)
+            const result = await wishListCollection.deleteOne(query)
+            res.send(result)
+        })
 
         
         
