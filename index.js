@@ -23,15 +23,15 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 // JWT VERIFICATION
 function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization
-    console.log(authHeader)
+    // console.log(authHeader)
     if (!authHeader) {
         return res.status(401).send({message: "UnAuthorized Access"})
     }
     const token = authHeader.split(" ")[1]
-    console.log(token)
+    // console.log(token)
     jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
         if (err) {
-            console.log("This is" ,err)
+            // console.log("This is" ,err)
             return res.status(403).send({message: "Forbidden Access"})
         }
         req.decoded = decoded
@@ -48,7 +48,7 @@ async function run() {
         const productCollection = client.db("buysandsells").collection("productcollections")
         const userCollection = client.db("buysandsells").collection("users")
         const bookingCollection = client.db("buysandsells").collection("bookings")
-
+       
         // Getting Category From Database
 
         app.get("/categories", async (req, res) => {
@@ -63,9 +63,9 @@ async function run() {
             console.log("This is", categoryId)
            
             const query = {options: categoryId }
-            console.log("Query" ,query)
+            // console.log("Query" ,query)
             const result = await productCollection.find(query).toArray()
-            console.log(result)
+            // console.log(result)
             res.send(result)
         })
 
@@ -92,7 +92,7 @@ async function run() {
             // console.log(decodedEmail)
             const query = {isSeller : true}
             const seller = await userCollection.find(query).toArray()
-            console.log(seller)
+            // console.log(seller)
             // console.log("This is decoded" ,decodedEmail)
             // console.log("This is query" ,query)
 
@@ -101,7 +101,7 @@ async function run() {
             }
 
             const products = req.body
-            console.log(products)
+            // console.log(products)
             const result = await productCollection.insertOne(products)
             res.send(result)
         })
@@ -204,10 +204,38 @@ async function run() {
         app.delete("/users/:id", async (req, res) => {
             const id = req.params.id
             const query = { _id: ObjectId(id) }
-            console.log(query)
+            // console.log(query)
             const result = await userCollection.deleteOne(query)
             res.send(result)
         })
+
+        app.get("/advertiseProduct", async (req, res) => {
+            const query = { isAdvertized: true }
+            const result = await productCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        // Advertised Product Api
+        // app.post("/advertised", async (req, res) => {
+        //     const product = req.body
+        //     console.log(product)
+        //     const result = await advertisedCollection.insertOne(product)
+        //     res.send(result)
+        // })
+        
+        app.put("/advertised/:id", async (req, res) => {
+            const id = req.params.id
+            const filter = { _id: ObjectId(id) }
+            const options = {upsert: true}
+            const updatedDoc = {
+                $set: {
+                    isAdvertized: true
+                }
+            }
+            const result = await productCollection.updateOne(filter, updatedDoc, options)
+            res.send(result)
+        })
+
     }
     finally {
         
