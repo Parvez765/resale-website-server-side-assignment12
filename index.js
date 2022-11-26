@@ -48,6 +48,8 @@ async function run() {
         const productCollection = client.db("buysandsells").collection("productcollections")
         const userCollection = client.db("buysandsells").collection("users")
         const bookingCollection = client.db("buysandsells").collection("bookings")
+
+        const wishListCollection = client.db("buysandsells").collection("wishList")
        
         // Getting Category From Database
 
@@ -215,13 +217,14 @@ async function run() {
             res.send(result)
         })
 
-        // Advertised Product Api
-        // app.post("/advertised", async (req, res) => {
-        //     const product = req.body
-        //     console.log(product)
-        //     const result = await advertisedCollection.insertOne(product)
-        //     res.send(result)
-        // })
+        // WishList Api
+        app.post("/wishlist", async (req, res) => {
+            const adItem = req.body
+            const result = await wishListCollection.insertOne(adItem)
+            res.send(result)
+            })
+
+        
         
         app.put("/advertised/:id", verifyJWT, async (req, res) => {
 
