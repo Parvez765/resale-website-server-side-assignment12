@@ -217,10 +217,18 @@ async function run() {
             res.send(result)
         })
 
-        // WishList Api
+        app.get("/wishlist", async (req, res) => {
+            
+            const email = req.query.email
+            const query = { email: email }
+            const result = await wishListCollection.find(query).toArray()
+            res.send(result)
+       })
+
+        // WishList Post Api
         app.post("/wishlist", async (req, res) => {
-            const adItem = req.body
-            const result = await wishListCollection.insertOne(adItem)
+            const addedProducts = req.body
+            const result = await wishListCollection.insertOne(addedProducts)
             res.send(result)
             })
 
