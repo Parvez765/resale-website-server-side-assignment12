@@ -233,6 +233,20 @@ async function run() {
             const result = await wishListCollection.insertOne(addedProducts)
             res.send(result)
         })
+
+        // Booking Delete Api
+        app.delete("/bookings/:id", async (req, res) => {
+            const id = req.params.id
+            // console.log("This is", id)
+            const query = { _id: ObjectId(id) }
+            // console.log("This is Quert", query)
+            const result = await bookingCollection.deleteOne(query)
+            res.send(result)
+        })
+
+
+
+
         
         // WishList Delete Api
         app.delete("/wishlist/:id", async (req, res) => {
