@@ -153,15 +153,15 @@ async function run() {
         app.get("/bookings", verifyJWT, async (req, res) => {
             
             const decodedEmail = req.decoded.email
-
+            // console.log("decodedEmail", decodedEmail)
             const email = req.query.email
+            const query = { email: email }
             // console.log("booking Email" ,email)
 
             if (email !== decodedEmail) {
                 return res.status(403).send("Forbidden Access")
             }
 
-            const query = { email: email }
             const result = await bookingCollection.find(query).toArray()
             res.send(result)
             
@@ -178,8 +178,11 @@ async function run() {
 
         app.get("/jwt", async (req, res) => {
             const email = req.query.email
-            const query = {email : email}
-            const user = await userCollection.findOne(query)
+            console.log("JWT Email", email)
+            const query = { email: email }
+            console.log( "This is", query)
+            const user = await userCollection.find(query).toArray()
+            console.log(user)
             if (user) {
                 const token = jwt.sign({ email }, process.env.ACCESS_TOKEN)
                 return res.send({accessToken: token})
